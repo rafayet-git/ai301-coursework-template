@@ -40,6 +40,15 @@ CI box left unticked: CI only runs once this PR is open, so there's
 nothing to report yet; only boxes true from my own local runs are
 checked above.
 
+**`make test-unit`**: `382 passed, 53 xfailed, 2 warnings in 9.44s`. The
+53 `xfailed` are pre-existing and unrelated (issue #65: async-mock
+misconfiguration in `test_review_service.py`, present on `main` before
+this branch). 7 of the 382 passing are new, added on this branch, for
+`compute_profile_content_hash`, `find_completed_review_by_hash`, and
+`create_or_reuse_review`.
+
+**`make lint`**: `All checks passed!`
+
 **Issue #9 is not a seeded bug** (`grep -rn "issue #9:" tests
 pyproject.toml` finds nothing), so the last checklist item doesn't apply
 and is left unticked rather than falsely checked.
@@ -56,8 +65,8 @@ identical error appears before this branch's code is even applied. It's
 an environment-level mypy/numpy stub incompatibility, not something this
 diff introduced or can fix, so left unticked rather than checked.
 
-Full output for all four checks, plus the before/after reproduction, is
-in `test_evidence.md`. Reproduction summary:
+Full command output for all four checks is in `test_evidence.md`, along
+with the full before/after reproduction this summarizes:
 
 Before (Unit 2, `main`, stub harness calling `process_review` directly
 on two pre-created pending reviews):
