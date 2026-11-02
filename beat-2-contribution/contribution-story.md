@@ -55,10 +55,9 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: Built a three-query issue-scout and patched it after it accepted five weak issues**
 
-[2-4 sentences: what you built (the scout, your strategy), what broke
-or fell short, what changed because of it.]
+I wrote a search strategy of three `gh search issues` queries (Docker/Python, Docker/Go, self-hosted/TypeScript, each traced to my fit profile) and ran the scout on it. The first scan accepted all five graded issues even though two of the repos had never merged a PR from an outside contributor, one issue depended on an unfinished issue, one needed NAS hardware I don't have, and one was opened by a bot. I added a required "Outside contributions get merged" check, made the scope check fail on open dependencies and hardware needs, and filtered bot-authored issues in the strategy; the re-run then accepted 3 and rejected 2. The rubric still missed that devtrack#158 was already fixed on main, which I only caught by reading the code, so a "problem still exists" check is the next patch.
 
 **Unit 6: [one line on the tool work]**
 
