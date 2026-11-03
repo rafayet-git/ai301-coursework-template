@@ -11,7 +11,7 @@ files and no evidence uploads are part of Assignment 5.
 **Student:** Rafayet Hossain
 **GitHub Username:** rafayet-git
 **Issue:** https://github.com/adudley78/mcp-audit/issues/251
-**Pull Request:** [GitHub PR link, once opened]
+**Pull Request:** https://github.com/adudley78/mcp-audit/pull/259
 
 One repository, built across units 5 to 8, telling the whole story of your real
 contribution. Fill it as you work, not at the end — the sections below ask for evidence that
@@ -62,10 +62,9 @@ I wrote a search strategy of three `gh search issues` queries (Docker/Python, Do
 
 I merged my three voice-guide copies into one guide, added an Upstream section with rules for claims, questions and pings, and installed the guard as a hook; its wiring test blocked `gh issue comment --help` on the first try, which is how I know the hook fires. When I first went to post my claim the guard was not installed yet (no `~/.claude/voice-guard/` folder), so I ran the checker by hand on my draft and it passed before I posted. For the repo-memory file I read CONTRIBUTING.md and the rule guide, oriented only on the community-rules code, and kept `CLAUDE.local.md` to 33 lines because the repo already ships a 989-line `CLAUDE.md`; it stays out of git through `.git/info/exclude`. What fell short: `uv` was not installed when I wrote the memory file, so its commands started out unverified; once I installed it I ran them, which showed the full suite has 7 failures on my machine that come from my own Claude Code config (not from the repo), and I recorded that baseline and the workaround in the file.
 
-**Unit 7: [one line on the tool work]**
+**Unit 7: Wrote a ship manifest for mcp-audit and ran the ship-gate on my branch before opening the PR**
 
-[2-4 sentences: the ship-gate and your gate manifest. What it produced
-on your real branch, what fought you, what changed because of it.]
+My manifest lists four checks from the repo's own CONTRIBUTING.md and CI config (pytest, ruff check, ruff format --check, the OWASP mapping validator) and excludes two with dated reasons: the 7 shadow tests that fail from my machine's own Claude Code config, and the test-count sync. The gate's first run on my branch stopped at my pr-precheck: my description said `rule validate` printed "✓ Valid", `rule test` was run and the demo scan was clean, but `test_evidence.md` held none of that output. I had run all three but never saved the output, so I added it to the evidence file and changed one phrase in the description that said `rule test` gave "nothing" for the controls, when it prints "no". The second run passed, and when the 30-minute pass expired the hook ran the gate again as I opened the PR, and it passed again. The gate also made me wait about two minutes each time for the full test run, which is why I opened the PR right after.
 
 **Unit 8: [one line on the tool work]**
 
@@ -175,7 +174,12 @@ What I am deliberately not changing: the rule engine; the `TOXIC-007` false posi
 6. Update `docs/manual-test-matrix.md` Section 15 (rule count and the `COMM-001`–`COMM-NNN` range), then run `uv run python scripts/update_test_count.py` and commit only the community-rule lines it changes in `README.md` and `CLAUDE.md`, leaving its test-count changes out.
 7. Run every check in `ship-manifest.md`, then open the PR titled `feat(rules): add COMM-036 and COMM-037 — Docker host-access flags` with the repo's rule-submission checklist, the config I tested against, the `rule validate` output and the full test result.
 
-Deviations: none yet.
+Deviations (2026-11-02):
+
+- Added `author: rafayet-git` to both rule files. The template lists it as optional, and it was not in the plan.
+- Named the test fixtures and the `command` forms the plan left open: `command` matches `docker` or `podman` also by full path or `.exe`, a `docker.socket` lookalike path does not fire, and the podman socket is covered by a test.
+- `update_test_count.py` changed the community-rule numbers but left "37 real" and "36 run by default" stale in two lines of `README.md` and `CLAUDE.md`, and it rewrote the test counts. I fixed the two stale numbers by hand and put the test-count lines back, as the rule guide asks.
+- Two commits, not one: the rules with everything a new rule ID must appear in, then the tests.
 
 **Toolkit**
 
@@ -188,17 +192,21 @@ Deviations: none yet.
 
 ## Testing Strategy
 
-[What observable checks prove the fix: your reproduction steps re-run
-against the built change (before and after), and the repo's own test
-suite or checks with the outcome shown. "Tests pass" with nothing
-observable named is not a strategy.]
+Four observable checks, all saved in `test_evidence.md`:
+
+1. **My reproduction, before and after.** I scanned the same six configs with `uv run mcp-audit scan --path <file> --format json` on `main` at `ee557b8` and on my branch: the Docker socket, `--privileged` and `--pid=host` configs, a `--network=host` config, and two controls (`--network=none` and the issue's "should not fire" config). Before: no COMM-036 or COMM-037 exists, and the dangerous configs return the same finding IDs as the control. After: the socket, `--privileged` and `--pid=host` configs return `COMM-036` (HIGH), the `--network=host` config returns `COMM-037` (MEDIUM), and both controls return neither.
+2. **New tests that fail without the fix.** `TestComm036HostTakeoverFlags` and `TestComm037HostNetwork` in `tests/test_rules.py` (26 tests) assert on each rule's own finding, not the full list, so the `TOXIC-007` false positive cannot make them flaky. With `COMM-036.yml` and `COMM-037.yml` moved away all 26 fail; with them back all 26 pass.
+3. **The repo's own checks, from `ship-manifest.md`.** `uv run pytest -q --deselect tests/test_shadow.py::TestShadowCommandIntegration` gives 8314 passed, 82 skipped; `ruff check` passes; `ruff format --check` reports 358 files already formatted; `validate_owasp_mapping.py` reports all 201 finding IDs mapped. Each runs in a clean shell with no virtual environment and exits 0.
+4. **The guide's own steps.** `mcp-audit rule validate` passes on both files, `rule test` shows a YES for the matching config and "no" for the control, `rule list` reports 40 bundled community rules (matching the manual test matrix), and `scan demo/configs/` produces no COMM-036 or COMM-037 findings.
+
+What I did not test: macOS or Windows, `podman` end to end (only its socket path in a test), and other container flags such as `--cap-add`, which are outside this PR. The full suite still shows 7 failures in `tests/test_shadow.py::TestShadowCommandIntegration`; they fail the same way on unchanged `main` on my machine and are excluded in my manifest with that reason.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: Claude Code ran the reproduction on both branches, the manifest checks in a clean shell and the new tests, and assembled `test_evidence.md` from the saved outputs. The ship-gate ran later, when I prepared the PR (see Unit 7).
+- What it produced: `test_evidence.md` with the before output, the after output, the fails-then-passes proof for the new tests, the four manifest checks and the two excluded ones.
+- Difficulties: the full suite takes over two minutes and I ran it several times; my "after" scans lost the `RUGPULL-000` first-run note only because the "before" scan had already created its state file, which could be misread as a side effect of my change, so I wrote that into the evidence file; and 7 shadow tests still fail from my machine's own config.
+- What changed: I deselect that one test class in the manifest and record it as excluded with a dated reason, and I note the `RUGPULL-000` difference next to the output instead of leaving it unexplained.
 
 ---
 
@@ -207,46 +215,44 @@ observable named is not a strategy.]
 [A running log, added to as you work. Date each entry. What you
 built, decisions you made when you made them, wrong turns included.]
 
-**[Date]**
+**2026-11-02**
 
-[Entry]
+Made the branch `feat/comm-036-comm-037-docker-host-access` (CONTRIBUTING.md names no branch convention) and wrote the two rules as compound `and` rules: `command` is docker or podman, and `args` matches the flags. I used lookarounds like `(?<!\S)--privileged(?:=true)?(?!\S)` instead of `( |$)` groups so the matched value in the finding is the bare flag, not the flag with spaces around it, and `\bdocker\.sock\b` so a `docker.socket` path does not fire. `rule validate` passed on both, and I scanned 17 variant configs (the issue's examples plus `--privileged=true`, `--pid host`, a podman socket, a `--mount` socket, a full path to docker, `--network=none`, bridge, `--privileged=false` and a non-docker command carrying the same flags): the eight "fire" configs hit COMM-036, the three host-network configs hit COMM-037, and the six quiet ones hit neither. `git fetch` from my fork failed because my SSH key is a hardware key and this session could not unlock it, so I checked through the GitHub API that upstream `main` is still `ee557b8`.
 
-**[Date]**
+**2026-11-02 (tests, docs and counts)**
 
-[Entry]
+Added `TestComm036HostTakeoverFlags` and `TestComm037HostNetwork` to `tests/test_rules.py` (26 tests). I moved the two rule files away and re-ran them to check the step's "a test that fails without the fix": all 26 failed, then all 26 passed with the files back. Then the registrations: `PROVENANCE.md` (two table rows, the counts, and the next free ID, now `COMM-038`), `docs/owasp-mapping.json` (MCP05, proposed), `docs/manual-test-matrix.md`, and the counts in `README.md` and `CLAUDE.md`. Wrong turn: `update_test_count.py` rewrote the test counts and left two "real" and "run by default" numbers stale, so I put the test counts back and fixed those numbers by hand. Results: ruff check, ruff format --check and `validate_owasp_mapping.py` pass; the full suite is 7 failed, 8320 passed, 82 skipped, and the 7 failures are the same `test_shadow.py` ones that fail on unchanged main because of my own Claude Code config; `scan demo/configs/` produces no COMM-036 or COMM-037 findings. Committed locally in two commits; nothing is pushed.
+
+**2026-11-02 (testing)**
+
+Ran my reproduction again on `main` and on the branch and saved both outputs, along with the manifest checks, in `test_evidence.md`. To get the "before" I switched the clone to `main`, scanned, and switched back; the branch was clean, so nothing carried over. The fix does what the issue asked: COMM-036 fires on the three host-takeover flags, COMM-037 fires on host networking, and the issue's "should not fire" config and `--network=none` stay quiet for both rules. Nothing failed that was not already failing on `main`.
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
-
+- Tool: Claude Code, which wrote the two rule files, the tests and the registrations from my plan, and ran the project's own checks from `ship-manifest.md` by hand and saved the output in `test_evidence.md`. The ship-gate ran later, when I prepared the PR (see Unit 7).
+- What it produced: two rule files, 26 tests, the documentation and count edits in two commits with messages that say what each does, and the evidence file.
+- Difficulties: `update_test_count.py` left stale numbers and changed test counts it should not; a fetch from my fork failed because my SSH key is a hardware key; the full suite shows 7 failures from my own machine's config.
+- What changed: I fixed the stale numbers by hand and restored the test counts, recorded the plan deviations in `plan.md`, and will push from my own terminal with the key plugged in.
 ---
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when opened]
+**PR Link:** https://github.com/adudley78/mcp-audit/pull/259
 
-**PR Description:** [what the PR says; much of the content above
-adapts into it]
+**PR Description:** Title: `feat(rules): add COMM-036 and COMM-037 for containers launched with host access`. It begins `Fixes #251` and adds two community rules, split as the maintainer asked in the issue thread: COMM-036 (HIGH) for `--privileged`, a mounted `docker.sock` or `podman.sock`, and `--pid=host`; COMM-037 (MEDIUM) for `--network=host` / `--net=host`. Both are compound `and` rules on `command` and `args`, with no engine changes, and `TOXIC-007` is left to the maintainer. The description fills in the rule-submission template, shows the finding IDs for six configs before and after, lists the checks with their results (26 new tests, ruff, format, OWASP mapping, and the 7 `test_shadow.py` failures that also happen on unchanged `main` on my machine), says what I did not test (macOS, Windows, podman end to end), and has an AI-assistance paragraph.
 
 **Maintainer Feedback:**
 
-- [Date]: [feedback received, or "none yet"; silence is a normal
-  state and costs you nothing]
-- [Date]: [how you addressed it]
+- 2026-11-02: none yet; the PR was opened this day.
 
-**Status:** [Awaiting review / Iterating / Merged / Closed. The
-status is a fact you record, never a grade: the PR is graded as
-opened.]
+**Status:** Awaiting review
 
 **Toolkit**
 
-- Tool:
-- What it produced:
-- Difficulties:
-- What changed:
+- Tool: the ship-gate, which ran my manifest checks and then my pr-precheck on the branch, title and `pr_draft.md`; the voice guard checked the description when I opened the PR.
+- What it produced: a PASS in `gate-log.md` for the branch at commit `6e3ad03`, with the four manifest checks passing and all six pr-precheck checks passing, and PR #259 on `adudley78/mcp-audit`. The log also carries an advisory that a phrase in my `owasp-mapping.json` notes ("the maintainer confirms the code on review") reads as process talk.
+- Difficulties: the first run stopped because the description claimed output that my evidence file did not contain; each run takes about two minutes for the tests; the pass lasts 30 minutes, which ran out before I opened the PR, so the hook ran the gate again.
+- What changed: I saved the `rule validate`, `rule test`, demo scan and `rule list` output in `test_evidence.md` as section 6 and corrected one phrase in the description. I did not change the manifest or the rubric, because the check that stopped me was asking for something this repo's PR template also asks for.
 
 ---
 
