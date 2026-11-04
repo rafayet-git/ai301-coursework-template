@@ -247,7 +247,9 @@ Ran my reproduction again on `main` and on the branch and saved both outputs, al
 - 2026-11-03: the maintainer said the rules and tests look good and the full suite passes in CI, but the `scripts/update_test_count.py --check` step failed: my 26 new tests moved the total to 8,441, and `CLAUDE.md`, `README.md` and `.github/release-notes-template.md` still quoted 8,415. They said they would merge once CI is green. Two macOS jobs were also cancelled after about 15 minutes, with no failing step.
 - 2026-11-03: I ran the script with the same optional extras CI installs, which gave 8,441, the same number the maintainer quoted, and committed the four changed lines (`d4ccedd`). I had left those lines out before because the rule guide says to commit only the community-rule lines. I merged current `main` into the branch, pushed, and posted a comment on the PR saying so: https://github.com/adudley78/mcp-audit/pull/259#issuecomment-6620712918.
 
-**Status:** Awaiting review
+- 2026-11-03 (02:49 UTC on 2026-11-04): the maintainer merged the PR (merge commit `ff87f5d`) and commented that COMM-036 and COMM-037 ship in the next release, and that the `TOXIC-007` `--network=` false positive is noted for a separate fix.
+
+**Status:** Merged
 
 **Toolkit**
 
