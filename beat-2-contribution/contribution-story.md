@@ -66,10 +66,9 @@ I merged my three voice-guide copies into one guide, added an Upstream section w
 
 My manifest lists four checks from the repo's own CONTRIBUTING.md and CI config (pytest, ruff check, ruff format --check, the OWASP mapping validator) and excludes two with dated reasons: the 7 shadow tests that fail from my machine's own Claude Code config, and the test-count sync. The gate's first run on my branch stopped at my pr-precheck: my description said `rule validate` printed "✓ Valid", `rule test` was run and the demo scan was clean, but `test_evidence.md` held none of that output. I had run all three but never saved the output, so I added it to the evidence file and changed one phrase in the description that said `rule test` gave "nothing" for the controls, when it prints "no". The second run passed, and when the 30-minute pass expired the hook ran the gate again as I opened the PR, and it passed again. The gate also made me wait about two minutes each time for the full test run, which is why I opened the PR right after.
 
-**Unit 8: [one line on the tool work]**
+**Unit 8: Installed the PR-monitor, wrote my playbook, and ran it on a PR that had already merged**
 
-[2-4 sentences: the PR-monitor and your playbook. What it read, what it
-drafted, what you did with the draft.]
+The monitor's free state check found PR #259 on `adudley78/mcp-audit`, not on my fork, because I had run `gh repo set-default`, and it read MERGED with 29 checks passing and the maintainer's merge comment as the last activity. I wrote my playbook from my own rules (acknowledge the response and then state the result, a nudge about 2 days after the repo's 7-day review window, once, with something new and no @-mentions, and no closing a PR just because it is quiet), and the full run drafted a "merged follow-up" comment from the merged-PR form. The draft's paragraph saying #251 "should be closable now" was wrong, because the issue had closed by itself at the same second as the merge, which the monitor could not see; its thank-you opening repeated the thanks I had already posted, and its one new line offered `--cap-add` and `--ipc=host` as a follow-up. I have not posted the draft, and I would change the monitor to read the linked issue's state as well as the PR's.
 
 ---
 
