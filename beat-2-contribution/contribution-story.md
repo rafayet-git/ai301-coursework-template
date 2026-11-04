@@ -233,6 +233,14 @@ Ran my reproduction again on `main` and on the branch and saved both outputs, al
 - What it produced: two rule files, 26 tests, the documentation and count edits in two commits with messages that say what each does, and the evidence file.
 - Difficulties: `update_test_count.py` left stale numbers and changed test counts it should not; a fetch from my fork failed because my SSH key is a hardware key; the full suite shows 7 failures from my own machine's config.
 - What changed: I fixed the stale numbers by hand and restored the test counts, recorded the plan deviations in `plan.md`, and will push from my own terminal with the key plugged in.
+
+**2026-11-02 (opening the PR)**
+
+Ran the ship-gate by hand (it stopped once, see Unit 7), pushed the branch from my own terminal, ran `gh repo set-default adudley78/mcp-audit` so the PR would go to the original repo and not my fork, and opened PR #259 through Claude Code with the same title and `pr_draft.md`.
+
+**2026-11-03 (review)**
+
+The maintainer's review found one failing CI check, `update_test_count.py --check`. I ran the script with the extras CI installs, committed the four test-count lines (`d4ccedd`), merged `main` into the branch and commented on the PR. The PR was merged at 02:49 UTC on 2026-11-04.
 ---
 
 ## Pull Request
@@ -246,7 +254,6 @@ Ran my reproduction again on `main` and on the branch and saved both outputs, al
 - 2026-11-02: none yet; the PR was opened this day.
 - 2026-11-03: the maintainer said the rules and tests look good and the full suite passes in CI, but the `scripts/update_test_count.py --check` step failed: my 26 new tests moved the total to 8,441, and `CLAUDE.md`, `README.md` and `.github/release-notes-template.md` still quoted 8,415. They said they would merge once CI is green. Two macOS jobs were also cancelled after about 15 minutes, with no failing step.
 - 2026-11-03: I ran the script with the same optional extras CI installs, which gave 8,441, the same number the maintainer quoted, and committed the four changed lines (`d4ccedd`). I had left those lines out before because the rule guide says to commit only the community-rule lines. I merged current `main` into the branch, pushed, and posted a comment on the PR saying so: https://github.com/adudley78/mcp-audit/pull/259#issuecomment-6620712918.
-
 - 2026-11-03 (02:49 UTC on 2026-11-04): the maintainer merged the PR (merge commit `ff87f5d`) and commented that COMM-036 and COMM-037 ship in the next release, and that the `TOXIC-007` `--network=` false positive is noted for a separate fix.
 
 **Status:** Merged
@@ -264,25 +271,22 @@ Ran my reproduction again on `main` and on the branch and saved both outputs, al
 
 **Technical Skills Gained**
 
-[What you learned technically, named concretely.]
+I learned how mcp-audit's rule engine matches a server: `args` are joined into one string and tested by a regex, and a compound `and` rule can require that `command` is `docker` or `podman` before the flag pattern counts. I learned to write the patterns with lookarounds (`(?<!\S)--privileged(?:=true)?(?!\S)`) so `--privileged=false` and a `docker.socket` path do not fire. I also learned what a rule needs besides its YAML file in this repo: a `PROVENANCE.md` entry, an OWASP mapping, a manual-test-matrix entry, and counts in two docs. And I learned to prove a test works by removing the fix: all 26 new tests fail without the rule files and pass with them.
 
 **Challenges Overcome**
 
-[What was hard and how you solved it; point at the real events, the
-Toolkit blocks above are full of them.]
+The scout accepted five weak issues in unit 5, including one whose repo had never merged an outside PR, so I added a required check for that and re-ran it. I took down my first claim comment and posted a new one after reading the whole thread and running the voice guard on it. In the build, `update_test_count.py` rewrote the test counts and left two community numbers stale, so I reverted the counts and fixed those numbers by hand. Seven `test_shadow.py` tests fail on unchanged `main` on my machine because `mcp-audit shadow` also finds my own Claude Code servers, so I excluded that class in my manifest with a dated reason and said so in the PR. The ship-gate stopped my description once because it claimed output I had not saved in my evidence file. At review, the check I had left out on purpose (the test-count lines) was the one that failed CI, and I fixed it the same day.
 
 **What I'd Do Differently Next Time**
 
-[Reflection on your process.]
+I would save the output of every command my description mentions as I run it, not after the gate asks for it. I would run `update_test_count.py --check` with the extras CI installs before opening the PR, and when a repo's guide and its CI disagree I would ask the maintainer on the thread first, since the guide's "leave those lines out" cost a review round. I would also run the test suite once with an empty home directory at the start, so the environment-only failures are known on day one. I would add the "problem still exists on the default branch" check to my scout rubric, which I have not added yet.
 
 ---
 
 ## Resources Used
 
-[What actually helped, not a reading list. List things this story
-already shows you using: the doc you followed to set the environment
-up, the thread that explained the bug, the person who answered you.
-One real entry beats ten plausible ones.]
-
-- [Link to documentation that helped]
-- [Discussion, issue, or post that helped]
+- `CONTRIBUTING.md` and `docs/contributing-rules.md` in adudley78/mcp-audit: the rule-submission steps, the registrations a new rule needs and the checks to run.
+- `rules/community/COMM-035.yml` and `src/mcp_audit/rules/engine.py`: the rule file I copied the shape from and the code that decides how `args` are matched.
+- Issue thread https://github.com/adudley78/mcp-audit/issues/251: the maintainer's decision to split the work into COMM-036 (HIGH) and COMM-037 (MEDIUM), the test guidance and the `TOXIC-007` note.
+- Docker's "Docker daemon attack surface" page, https://docs.docker.com/engine/security/#docker-daemon-attack-surface: the source cited for COMM-036's severity.
+- PR #259's review comment from adudley78, which named the failing check and the script to run: https://github.com/adudley78/mcp-audit/pull/259.
