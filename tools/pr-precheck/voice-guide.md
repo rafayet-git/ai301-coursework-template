@@ -1,27 +1,5 @@
 # Voice guide: how I talk upstream
 
-<!--
-THIS IS A CARRY-OVER SLOT, not a new hole. You wrote this guide in
-week 2 and extended it in week 3 for the plan-comment register; paste
-your filled voice-guide.md here, whole. The carried-over content is
-not re-authored and is not graded as new work this week.
-
-Then reread it with the PR title and description in mind. Your plan
-comment committed you to an approach; a PR title and description ask a
-maintainer to spend review time on your work, and a PR can also be the
-place a disclosed shortfall first becomes visible (partial test
-coverage, a deferred failure mode, a known gap). If your rules do not
-cover that register (how a title earns its thirty seconds, how a
-description promises exactly what the diff contains, how a disclosed
-shortfall is worded so it reads as honesty rather than apology), extend
-the guide with what it needs. Extending is allowed and encouraged;
-starting over is not required.
-
-Live mode reads this file before your PR title and description go out
-and reports any rule your draft breaks. Eval mode ignores it entirely,
-because your voice is yours and carries no gold labels.
--->
-
 ## Who I am in threads
 
 I am a senior computer science student making my first open-source
@@ -29,8 +7,6 @@ contribution, with experience in Python, C/C++, JavaScript, and TypeScript.
 I investigate issues from my own environment and report what I can reproduce,
 including limits and uncertainty, without pretending to be a maintainer or
 promising a fix before I understand the code.
-
-<!-- Paste your week-2 section here. -->
 
 ## Rules I write by
 
@@ -49,6 +25,14 @@ as a possibility unless the evidence establishes it.
 
 - Wrong: "I confirmed this is definitely a race condition in the debounce code."
 - Right: "The second request returned the stale value in the captured output; a debounce race is one possible explanation, but I have not isolated the cause."
+
+### Rule: Match the claim to the evidence
+
+Say reproduced, not reproduced, or inconclusive according to the shown result,
+and name material environment differences.
+
+- Wrong: "Confirmed on all systems; this is guaranteed reproducible."
+- Right: "I reproduced the behavior on Ubuntu 24.04 with Python 3.12; I have not tested the other platforms named in the issue."
 
 ### Rule: Match the plan to the evidence
 
@@ -102,20 +86,56 @@ point, not a hedge buried in a side remark.
 - Wrong: "did not get a chance to test on an actual romanian layout but the library update looks right."
 - Right: "Re-ran repro 1 (the capacity-overflow panic) and confirmed the fix. I have not yet re-run repro 2 (the `--exec` thread-spawn abort) that the plan's test plan also names; that's open before this is ready to merge."
 
-<!-- Paste your week-2 rules here, wrong/right pairs and all. Add any
-rule the plan-comment register needs that your week-2 comments did
-not. -->
-
 ## Things I never post
 
-- I never claim a root cause or fix that my reproduction does not support.
-- I never post a plan that is only "same as above" or a generic assignment request.
+- I never claim a crash, root cause, fix, or cross-platform result that my artifact does not show.
+- I never post a claim or plan that is only "me too" or "same as above", or that asks for assignment without naming my intended work.
 - I never promise a merge, guaranteed fix, or deadline controlled by a maintainer.
+- I never hide a version, platform, input, or configuration difference that could change the result.
 - I never hide an unresolved architecture choice or material scope expansion.
 - I never omit a disclosure that the repository explicitly requires.
 - I never title a PR with hype or a feeling instead of the fix.
 - I never claim a diff matches the plan "exactly" without having diffed the diff against the plan's named files myself.
 - I never let a partial test result read as a complete one; a gap the plan's test plan named gets stated by name.
 
-<!-- Paste your week-2 list here; extend it if planning tempts you
-toward new ones (overpromised timelines are the classic). -->
+## Upstream: how I talk to maintainers
+
+### Claims I post
+
+#### Rule: A claim names a first step and a report-back I control
+
+A claim says the one concrete thing I will do first and when I will report back
+on the thread. The date is for my own report, never for a fix or a merge.
+
+- Wrong: "Can I take this? I'll get a PR up soon."
+- Right: "I'd like to work on this. My first step is to set up the repo and draft the rule against your two example configs; I'll report back here by Thursday with what I found."
+
+#### Rule: I claim only what is free, and I release it honestly
+
+I read every comment on the thread before claiming, and I never claim over
+someone else's claim. If I stop working on it, I say so in the thread instead
+of leaving the claim to go stale.
+
+- Wrong: (claiming without reading the thread, then saying nothing for weeks)
+- Right: "I'm not going to get to this after all, so I'm releasing my claim for someone else to take."
+
+### Questions I ask
+
+#### Rule: One question the maintainer can answer from their chair
+
+A question names what I already tried or read, then asks one thing that can be
+answered in a sentence or two. I do not bundle several questions in one comment.
+
+- Wrong: "How does the rule system work, and what severity should I use, and do I need to touch the docs too?"
+- Right: "I read the severity guidance in CONTRIBUTING.md and plan to set this rule to HIGH; is HIGH right for the Docker socket case, or would you go lower?"
+
+### Pings I send
+
+#### Rule: I ping on the repo's rhythm, not my own clock
+
+I wait at least as long as the repo's stated or usual reply time, then ping once
+with something new, such as what I have done since. I never write pressure as
+politeness.
+
+- Wrong: "Hi, just checking in again, any update? It's been two days."
+- Right: "Following up now that a week has passed: I've drafted the rule and I'm continuing with HIGH severity unless you'd prefer something else."

@@ -31,7 +31,10 @@ the order matters for the checks that come later. -->
 1. Read the issue context and thread highlights first. Record the requested
 	behavior, explicit constraints, maintainer directions, prior-art PRs, and
 	repository conventions named in the package.
-2. Read the entire repro-evidence block next. Record the environment, exact
+2. Read the entire repro-evidence block next. In live mode the block is the
+	student's posted repro comment; when the repro was posted inside a combined
+	update comment, use that comment's repro paragraph and say so in the
+	summary. Record the environment, exact
 	trigger, control run, artifact, observed outcome, and limitations. This
 	establishes what the plan must explain and what its tests must repeat.
 3. Read the candidate plan from scope and diagnosis through implementation,
