@@ -179,6 +179,8 @@ Deviations (2026-11-02):
 - Named the test fixtures and the `command` forms the plan left open: `command` matches `docker` or `podman` also by full path or `.exe`, a `docker.socket` lookalike path does not fire, and the podman socket is covered by a test.
 - `update_test_count.py` changed the community-rule numbers but left "37 real" and "36 run by default" stale in two lines of `README.md` and `CLAUDE.md`, and it rewrote the test counts. I fixed the two stale numbers by hand and put the test-count lines back, as the rule guide asks.
 - Two commits, not one: the rules with everything a new rule ID must appear in, then the tests.
+- The PR title became `feat(rules): add COMM-036 and COMM-037 for containers launched with host access`, not the title in step 7.
+- Deviation (2026-11-03): step 6 left the test-count lines out, as the rule guide says. At review the maintainer asked for them because CI checks them, so I committed them in a third commit (`d4ccedd`).
 
 **Toolkit**
 
@@ -210,9 +212,6 @@ What I did not test: macOS or Windows, `podman` end to end (only its socket path
 ---
 
 ## Implementation Notes
-
-[A running log, added to as you work. Date each entry. What you
-built, decisions you made when you made them, wrong turns included.]
 
 **2026-11-02**
 
